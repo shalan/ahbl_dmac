@@ -145,11 +145,11 @@ module dmac_master (
     //
             // Data Alignment
     wire [31:0] ARD =   (ssize == 2)                        ? HRDATA                            :
-                        (ssize == 1) && (SA[0] == 1)        ? {HRDATA[31:16], HRDATA[31:16]}    :
-                        (ssize == 1) && (SA[0] == 0)        ? {HRDATA[15:0 ], HRDATA[15:0 ]}    :
+                        (ssize == 1) && (SA[1] == 1)        ? {HRDATA[31:16], HRDATA[31:16]}    :
+                        (ssize == 1) && (SA[1] == 0)        ? {HRDATA[15:0 ], HRDATA[15:0 ]}    :
                         (ssize == 0) && (SA[1:0] == 2'b00)  ? {4{HRDATA[7:0]}}                  :
                         (ssize == 0) && (SA[1:0] == 2'b01)  ? {4{HRDATA[15:8]}}                 :
-                        (ssize == 0) && (SA[1:0] == 2'b10)  ? {4{HRDATA[23:16]}}                : {4{HRDATA[31:25]}} ;
+                        (ssize == 0) && (SA[1:0] == 2'b10)  ? {4{HRDATA[23:16]}}                : {4{HRDATA[31:24]}} ;
 
     always@(posedge HCLK, negedge HRESETn)
         if(!HRESETn)
