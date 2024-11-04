@@ -142,11 +142,20 @@ module dmac_master (
         else if(nstate == JCR)
             CR <= CR - 1'b1;
 
+    //
+            // Data Alignment
+    wire [31:0] ARD =   (ssize == 2)                        ? HRDATA                            :
+                        (ssize == 1) && (SA[0] == 1)        ? {HRDATA[31:16], HRDATA[31:16]}    :
+                        (ssize == 1) && (SA[0] == 0)        ? {HRDATA[15:0 ], HRDATA[15]:0]}    :
+                        (ssize == 0) && (SA[1:0] == 2'b00)  ? {4{RGDATA[7:0]}}                  :
+                        (ssize == 0) && (SA[1:0] == 2'b01)  ? {4{RGDATA[15:8]}}                 :
+                        (ssize == 0) && (SA[1:0] == 2'b10)  ? {4{RGDATA[23:16]}}                : {4{RGDATA[31:25]}} ;
+
     always@(posedge HCLK, negedge HRESETn)
         if(!HRESETn)
             D <= 'b0;
         else if((state == LDD1) & HREADY)
-            D <= HRDATA;
+            D <= ARD;
 
     reg [1:0]   h_trans;
 
@@ -166,4 +175,6 @@ module dmac_master (
     assign  HWRITE  = (state == STD0);
 
     assign busy = (state != WFS) & (state != DONE);
+
+                
 endmodule
