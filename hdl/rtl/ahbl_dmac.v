@@ -104,7 +104,7 @@ module ahbl_dmac (
     wire        start;
     wire        wfi;
     wire [2:0]  irqsrc;
-    wire [7:0]  pirq;
+    //wire [7:0]  pirq;
 
     wire        done;
     wire        busy;
@@ -131,7 +131,7 @@ module ahbl_dmac (
         .start(start),
         .wfi(wfi),
         .irqsrc(irqsrc),
-        .pirq(pirq),
+        .pirq(PIRQ),
 
         .done(done),
         .busy(busy)
@@ -195,10 +195,10 @@ module ahbl_dmac (
             STATUS <= 2'b0;
         else begin
             STATUS[1] <= busy;
-            if(STATUS_sel & rd_enable)
-                STATUS[0] <= 1'b0;
-            else if(done)
+            if(done)
                 STATUS <= 1'b1;
+            else if(STATUS_sel & rd_enable)
+                STATUS[0] <= 1'b0;
             end
 
     assign sHREADYOUT = 1'b1;
