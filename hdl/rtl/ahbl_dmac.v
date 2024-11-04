@@ -42,6 +42,17 @@
         else if(wr_enable & ``r``_sel)\
             r <= sHWDATA;\
 
+`define     AHBL_REG_SC(r) \
+    wire    ``r``_sel = (last_HADDR[15:0] == ``r``_off); \
+    always @(posedge HCLK, negedge HRESETn) \
+        if(!HRESETn)\
+            r <= 'h0;\
+        else if(wr_enable & ``r``_sel)\
+            r <= sHWDATA;\
+        else\
+            r <= 1'b0;
+
+
 `define     AHBL_READ(r)\
     ``r``_sel ? r :
 
@@ -171,7 +182,7 @@ module ahbl_dmac (
 
     `AHBL_REG(SADDR);
     `AHBL_REG(DADDR);
-    `AHBL_REG(CTRL);
+    `AHBL_REG_SC(CTRL);
     `AHBL_REG(DCFG);
     `AHBL_REG(SCFG);
     `AHBL_REG(CFG);
