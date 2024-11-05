@@ -91,7 +91,9 @@ module ahbl_dmac (
                 CFG_off     = 20,
                 BCOUNT_off  = 24,
                 BSIZE_off   = 28,
-                STATUS_off  = 32;
+                STATUS_off  = 32,
+                ICRA_off    = 36,
+                ICRV_off    = 40;
 
     wire [31:0] saddr;
     wire [31:0] daddr;
@@ -108,6 +110,21 @@ module ahbl_dmac (
 
     wire        done;
     wire        busy;
+
+    wire        rd_enable = last_HSEL & (~last_HWRITE) & last_HTRANS[1]; 
+    wire        wr_enable = last_HSEL & (last_HWRITE) & last_HTRANS[1];
+
+    reg [31:0]  SADDR, DADDR;
+    reg [0:0]   CTRL;
+    reg [7:0]   SCFG;
+    reg [7:0]   DCFG;
+    reg [7:0]   CFG;
+    reg [7:0]   BCOUNT;
+    reg [7:0]   BSIZE;
+    reg [1:0]   STATUS;
+    reg [31:0]  ICRV;
+    reg [31:0]  ICRA;
+    
 
     dmac_master master (
         .HCLK(HCLK),
@@ -133,6 +150,9 @@ module ahbl_dmac (
         .irqsrc(irqsrc),
         .pirq(PIRQ),
 
+        .icr(ICRV),
+        .icr_addr(ICRA),
+
         .done(done),
         .busy(busy)
     );
@@ -156,17 +176,6 @@ module ahbl_dmac (
 		end
 	end
     
-    wire rd_enable = last_HSEL & (~last_HWRITE) & last_HTRANS[1]; 
-    wire wr_enable = last_HSEL & (last_HWRITE) & last_HTRANS[1];
-
-    reg [31:0]  SADDR, DADDR;
-    reg [0:0]   CTRL;
-    reg [7:0]   SCFG;
-    reg [7:0]   DCFG;
-    reg [7:0]   CFG;
-    reg [7:0]   BCOUNT;
-    reg [7:0]   BSIZE;
-    reg [1:0]   STATUS;
 
     assign saddr    = SADDR;
     assign daddr    = DADDR;
@@ -188,6 +197,8 @@ module ahbl_dmac (
     `AHBL_REG(CFG);
     `AHBL_REG(BCOUNT);
     `AHBL_REG(BSIZE);
+    `AHBL_REG(ICRV);
+    `AHBL_REG(ICRA);
 
     wire  STATUS_sel = (last_HADDR[15:0] == STATUS_off);
     always@(posedge HCLK, negedge HRESETn)
@@ -212,6 +223,8 @@ module ahbl_dmac (
                         `AHBL_READ(BCOUNT)
                         `AHBL_READ(BSIZE)
                         `AHBL_READ(STATUS)
+                        `AHBL_READ(ICRA)
+                        `AHBL_READ(ICRV)
                         32'hBAD0F00D;
 
     assign IRQ = STATUS;
