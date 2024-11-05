@@ -91,19 +91,18 @@ module dmac_master (
                     else nstate = WFS;
             LCR :   nstate = LCB;
             LCB :   nstate = WFI;
-            WFI :   if(wfi) begin
-                        if(got_irq) nstate = ICR0;
-                        else nstate = WFI;
-                    end else
-                        nstate = LDD0;
-            ICR0:   nstate = ICR1;   
-            ICR1:   if(HREADY) nstate = LDD0; else nstate = ICR1;
+            WFI :   if(got_irq) nstate = LDD0;
+                    else nstate = WFI;
             LDD0:   nstate = LDD1;
             LDD1:   if(HREADY) nstate = STD0; else nstate = LDD1;
             STD0:   nstate = STD1; 
             STD1:   if(HREADY) nstate = JCB;
-            JCB :   if(CB_zero) nstate = JCR;
-                    else nstate = WFI;
+            JCB :   if(CB_zero) begin
+                        if(wfi) nstate = ICR0;
+                        else nstate = JCR;
+                    end else nstate = WFI;
+            ICR0:   nstate = ICR1;   
+            ICR1:   if(HREADY) nstate = WFI; else nstate = ICR1;
             JCR :   if(CR_zero) nstate = DONE;
                     else nstate = LCB;
             DONE:   nstate = WFS;
