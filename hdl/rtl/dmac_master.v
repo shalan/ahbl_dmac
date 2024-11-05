@@ -41,8 +41,8 @@ module dmac_master (
     input   wire [2:0]  irqsrc,
     input   wire [7:0]  pirq,
     
-    input   wire [31:0] icr_addr,
-    input   wire [31:0] icr,
+    input   wire [31:0] icra,
+    input   wire [31:0] icrv,
 
     output  wire        done,
     output  wire        busy
@@ -183,7 +183,7 @@ module dmac_master (
                         (state == STD0) ? DA :
                         icr_addr;
     assign  HTRANS  =   h_trans;
-    assign  HWDATA  =   D;
+    assign  HWDATA  =   (state == ICR1) ? icrv : D;
     assign  HSIZE   =   (state == LDD0) ? ssize : 
                         (state == STD0) ? dsize :
                         3'b010;

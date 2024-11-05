@@ -150,8 +150,8 @@ module ahbl_dmac (
         .irqsrc(irqsrc),
         .pirq(PIRQ),
 
-        .icr(ICRV),
-        .icr_addr(ICRA),
+        .icrv(ICRV),
+        .icra(ICRA),
 
         .done(done),
         .busy(busy)
