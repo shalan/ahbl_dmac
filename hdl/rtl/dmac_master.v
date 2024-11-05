@@ -102,7 +102,7 @@ module dmac_master (
                         else nstate = JCR;
                     end else nstate = WFI;
             ICR0:   nstate = ICR1;   
-            ICR1:   if(HREADY) nstate = WFI; else nstate = ICR1;
+            ICR1:   if(HREADY) nstate = JCR; else nstate = ICR1;
             JCR :   if(CR_zero) nstate = DONE;
                     else nstate = LCB;
             DONE:   nstate = WFS;
