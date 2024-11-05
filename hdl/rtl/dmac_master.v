@@ -40,6 +40,9 @@ module dmac_master (
     input   wire        wfi,
     input   wire [2:0]  irqsrc,
     input   wire [7:0]  pirq,
+    
+    input   wire [31:0] icr_addr,
+    input   wire [31:0] icr,
 
     output  wire        done,
     output  wire        busy
@@ -67,7 +70,9 @@ module dmac_master (
                 STD1 = 7,
                 JCB = 8,
                 JCR = 9,
-                DONE = 10;
+                DONE = 10,
+                ICR0 = 11,
+                ICR1 = 12;
 
     reg [7:0]   CR, CB;
     reg [31:0]  D;
@@ -86,8 +91,13 @@ module dmac_master (
                     else nstate = WFS;
             LCR :   nstate = LCB;
             LCB :   nstate = WFI;
-            WFI :   if(got_irq) nstate = LDD0;
-                    else nstate = WFI;
+            WFI :   if(wfi) begin
+                        if(got_irq) nstate = ICR0;
+                        else nstate = WFI;
+                    end else
+                        nstate = LDD0;
+            ICR0:   nstate = ICR1;   
+            ICR1:   if(HREADY) nstate = LDD0; else nstate = ICR1;
             LDD0:   nstate = LDD1;
             LDD1:   if(HREADY) nstate = STD0; else nstate = LDD1;
             STD0:   nstate = STD1; 
@@ -162,19 +172,24 @@ module dmac_master (
     always@(posedge HCLK, negedge HRESETn)
         if(!HRESETn)
             h_trans <= 'b00;
-        else if((nstate == LDD0) || (nstate == STD0))// || (nstate == LDD1) || (nstate == STD1))
+        else if((nstate == LDD0) || (nstate == STD0 || (nstate == ICR0)))// || (nstate == LDD1) || (nstate == STD1))
             h_trans <= 'b10;
         else
             h_trans <= 'b00;
     
-    assign  done    = (nstate == DONE);
-    assign  HADDR   = (state == LDD0) ? SA : DA;
-    assign  HTRANS  = h_trans;
-    assign  HWDATA  = D;
-    assign  HSIZE   = (state == LDD0) ? ssize : dsize;
-    assign  HWRITE  = (state == STD0);
+    assign  done    =   (nstate == DONE);
 
-    assign busy = (state != WFS) & (state != DONE);
+    assign  HADDR   =   (state == LDD0) ? SA : 
+                        (state == STD0) ? DA :
+                        icr_addr;
+    assign  HTRANS  =   h_trans;
+    assign  HWDATA  =   D;
+    assign  HSIZE   =   (state == LDD0) ? ssize : 
+                        (state == STD0) ? dsize :
+                        3'b010;
+    assign  HWRITE  =   (state == STD0) || (state == ICR0);
+
+    assign  busy    =   (state != WFS) & (state != DONE);
 
                 
 endmodule
