@@ -181,7 +181,7 @@ module dmac_master (
 
     assign  HADDR   =   (state == LDD0) ? SA : 
                         (state == STD0) ? DA :
-                        icr_addr;
+                        icrv;
     assign  HTRANS  =   h_trans;
     assign  HWDATA  =   (state == ICR1) ? icrv : D;
     assign  HSIZE   =   (state == LDD0) ? ssize : 
