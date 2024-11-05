@@ -19,6 +19,7 @@
 
 /*
     Registers                   Offset      Size        Fields
+    -------------------------------------------------------------------------------------------
     Source Addrerss             0x00        32          n/a
     Destination Address         0x04        32          n/a
     Control Register            0x08        1           0:   start
@@ -32,6 +33,8 @@
     Block Size                  0x1C        16          n/a
     Status                      0x20        2           0: done
                                                         1: busy
+    ICRA                        0x24        32          n/a
+    ICRV                        0x28        32          n/a
 */
 
 `define     AHBL_REG(r) \
@@ -111,9 +114,6 @@ module ahbl_dmac (
     wire        done;
     wire        busy;
 
-    wire        rd_enable = last_HSEL & (~last_HWRITE) & last_HTRANS[1]; 
-    wire        wr_enable = last_HSEL & (last_HWRITE) & last_HTRANS[1];
-
     reg [31:0]  SADDR, DADDR;
     reg [0:0]   CTRL;
     reg [7:0]   SCFG;
@@ -176,18 +176,20 @@ module ahbl_dmac (
 		end
 	end
     
+    wire    rd_enable   = last_HSEL & (~last_HWRITE) & last_HTRANS[1]; 
+    wire    wr_enable   = last_HSEL & (last_HWRITE) & last_HTRANS[1];
 
-    assign saddr    = SADDR;
-    assign daddr    = DADDR;
-    assign start    = CTRL[0];
-    assign ssize    = SCFG[2:0];
-    assign sinc     = SCFG[6:4];
-    assign dsize    = DCFG[2:0];
-    assign dinc     = DCFG[6:4];
-    assign wfi      = CFG[0];
-    assign irqsrc   = CFG[6:4];
-    assign bcount   = BCOUNT;
-    assign bsize    = BSIZE;
+    assign  saddr       = SADDR;
+    assign  daddr       = DADDR;
+    assign  start       = CTRL[0];
+    assign  ssize       = SCFG[2:0];
+    assign  sinc        = SCFG[6:4];
+    assign  dsize       = DCFG[2:0];
+    assign  dinc        = DCFG[6:4];
+    assign  wfi         = CFG[0];
+    assign  irqsrc      = CFG[6:4];
+    assign  bcount      = BCOUNT;
+    assign  bsize       = BSIZE;
 
     `AHBL_REG(SADDR);
     `AHBL_REG(DADDR);
