@@ -33,8 +33,8 @@
     Block Size                  0x1C        16          n/a
     Status                      0x20        2           0: done
                                                         1: busy
-    ICRA                        0x24        32          n/a
-    ICRV                        0x28        32          n/a
+    ICR Address                 0x24        32          n/a
+    ICR Value                   0x28        32          n/a
 */
 
 `define     AHBL_REG(r) \
