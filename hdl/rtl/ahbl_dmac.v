@@ -109,7 +109,7 @@ module ahbl_dmac (
     wire [2:0]  dsize;
     wire [2:0]  sinc;
     wire [2:0]  dinc;
-    wire [7:0]  bsize;
+    wire [15:0] bsize;
     wire [7:0]  bcount;
     wire        start;
     wire        wfi;
@@ -125,7 +125,7 @@ module ahbl_dmac (
     reg [7:0]   DCFG;
     reg [7:0]   CFG;
     reg [7:0]   BCOUNT;
-    reg [7:0]   BSIZE;
+    reg [15:0]  BSIZE;
     reg [1:0]   STATUS;
     reg [31:0]  ICRV;
     reg [31:0]  ICRA;

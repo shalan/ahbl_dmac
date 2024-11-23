@@ -34,7 +34,7 @@ module dmac_master (
     input   wire [2:0]  dsize,
     input   wire [2:0]  sinc,
     input   wire [2:0]  dinc,
-    input   wire [7:0]  bsize,
+    input   wire [15:0] bsize,
     input   wire [7:0]  bcount,
     input   wire        start,
     input   wire        wfi,
@@ -74,7 +74,8 @@ module dmac_master (
                 ICR0 = 11,
                 ICR1 = 12;
 
-    reg [7:0]   CR, CB;
+    reg [7:0]   CR;
+    reg [15:0]  CB;
     reg [31:0]  D;
     reg [31:0]  SA, DA;
 
