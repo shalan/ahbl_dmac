@@ -33,13 +33,8 @@
     Block Size                  0x1C        16          n/a
     Status                      0x20        2           0: done
                                                         1: busy
-<<<<<<< HEAD
-    ICR Address                 0x24        32          n/a
-    ICR Value                   0x28        32          n/a
-=======
     ICRA (IC Register Address)  0x24        32          n/a
     ICRV (IC Register Value)    0x28        32          n/a
->>>>>>> 35f4dd9c3f1db80f071a51545b4e5a063445e22b
 */
 
 `define     AHBL_REG(r) \
@@ -129,7 +124,7 @@ module ahbl_dmac (
     reg [1:0]   STATUS;
     reg [31:0]  ICRV;
     reg [31:0]  ICRA;
-    
+
 
     dmac_master master (
         .HCLK(HCLK),
